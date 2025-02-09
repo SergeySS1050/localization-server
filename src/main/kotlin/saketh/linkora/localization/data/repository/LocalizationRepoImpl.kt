@@ -24,7 +24,7 @@ class LocalizationRepoImpl : LocalizationRepo {
                 it.availableLanguageDTO.copy(localizedStringsCount = localizedStringsCount)
             },
             totalStrings = 328,
-            lastUpdatedOn = "12-10-2024::06:02 PM IST"
+            lastUpdatedOn = "09-02-2025::11:06 PM IST"
         )
     }
 
