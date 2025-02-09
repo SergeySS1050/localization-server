@@ -1,11 +1,11 @@
-package saketh.linkora.localization.routing.model.info
+package saketh.linkora.localization.domain.model.info
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Info(
+data class LocalizedInfoDTO(
     val totalAvailableLanguages: Int,
-    val availableLanguages: List<Language>,
+    val availableLanguages: List<AvailableLanguageDTO>,
     val totalStrings: Int,
     val lastUpdatedOn: String
 )

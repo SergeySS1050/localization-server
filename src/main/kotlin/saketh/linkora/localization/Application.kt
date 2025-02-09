@@ -5,6 +5,8 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
+import saketh.linkora.localization.data.repository.LocalizationRepoImpl
+import saketh.linkora.localization.domain.repository.LocalizationRepo
 import saketh.linkora.localization.routing.configureRouting
 
 fun main() {
@@ -16,5 +18,6 @@ fun Application.module() {
     install(ContentNegotiation) {
         json()
     }
-    configureRouting()
+    val localizationRepo: LocalizationRepo = LocalizationRepoImpl()
+    configureRouting(localizationRepo)
 }
