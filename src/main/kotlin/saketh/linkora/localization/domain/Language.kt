@@ -7,5 +7,8 @@ enum class Language(val availableLanguageDTO: AvailableLanguageDTO) {
         AvailableLanguageDTO(
             localizedName = "हिंदी", languageCode = "hi"
         )
+    ),
+    MandarinChinese(
+        AvailableLanguageDTO(localizedName = "中文 (Zhōngwén)", languageCode = "zh")
     )
 }

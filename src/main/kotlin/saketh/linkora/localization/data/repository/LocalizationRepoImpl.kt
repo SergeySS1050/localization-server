@@ -23,7 +23,7 @@ class LocalizationRepoImpl : LocalizationRepo {
                     Json.decodeFromString<Map<String, String>>(retrieveRawFileString(it.availableLanguageDTO.languageCode)).size
                 it.availableLanguageDTO.copy(localizedStringsCount = localizedStringsCount)
             },
-            totalStrings = 328,
+            totalStrings = 315,
             lastUpdatedOn = "09-02-2025::11:06 PM IST"
         )
     }
