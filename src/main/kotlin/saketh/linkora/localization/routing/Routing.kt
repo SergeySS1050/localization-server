@@ -71,12 +71,12 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
     input {
         width: 100%;
         padding: 0.75rem;
-        border: 1px solid rgba(208, 188, 255, 0.3);  /* Softer border color */
+        border: 1px solid rgba(208, 188, 255, 0.3);
         border-radius: 4px;
         font-size: 1rem;
         box-sizing: border-box;
-        background-color: #2D2A31;  /* Dark background for inputs */
-        color: #E6E1E5;  /* Light text color */
+        background-color: #2D2A31;
+        color: #E6E1E5;
         transition: all 0.3s ease;
     }
     input:focus {
@@ -119,14 +119,44 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
                             unsafe {
                                 raw(
                                     """
-       document.addEventListener("DOMContentLoaded", () => {
-    async function copyNewJSONToClipboard(text) {
-      await navigator.clipboard.writeText(text);
-    }
-    document.getElementById("copy-btn")
-            .addEventListener("click", () => copyNewJSONToClipboard('generatedJson'));
-  });
-      """.trimIndent()
+            function collectFormData() {
+                const formData = {};
+                document.querySelectorAll('.form-field input, .form-field textarea').forEach(input => {
+                    if (input.name) formData[input.name] = input.value;
+                });
+                return formData;
+            }
+
+            function copyToClipboard(text) {
+                if (!navigator.clipboard) {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        alert('Data copied! (Fallback method)');
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    document.body.removeChild(textarea);
+                    return;
+                }
+
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('Data copied to clipboard!'))
+                    .catch(() => alert('Failed to copy - please try again'));
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const copyBtn = document.getElementById("copy-btn");
+                if (copyBtn) {
+                    copyBtn.addEventListener("click", () => {
+                        copyToClipboard(JSON.stringify(collectFormData(), null, 2));
+                    });
+                }
+            });
+            """.trimIndent()
                                 )
                             }
                         }
@@ -145,7 +175,7 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
                                 br()
                             }
                         }
-                        button {
+                        button(type = ButtonType.button) {
                             id = "copy-btn"
                             +"Copy JSON"
                         }
