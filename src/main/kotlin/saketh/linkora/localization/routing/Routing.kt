@@ -24,8 +24,21 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
             )
         }
         get("/contribute") {
+            if (call.parameters.entries().size > 1) {
+                call.respond("It seems you've provided multiple parameters. Only one is allowed — either `lang` or `newLang`.")
+                return@get
+            }
             val latestKeysWithDefaultValuesFromTheApp = localizationRepo.getLatestKeysWithDefaultValues()
-            localizationRepo.getLatestKeyValuePairsForALanguage(call.parameters["lang"].toString()).onSuccess {
+            val forANewLanguage = try {
+                call.parameters["newLang"].toBoolean()
+            } catch (_: Exception) {
+                false
+            }
+            if (forANewLanguage.not()) {
+                localizationRepo.getLatestKeyValuePairsForALanguage(call.parameters["lang"].toString())
+            } else {
+                Result.success(emptyMap())
+            }.onSuccess {
                 call.respondHtml {
                     head {
                         link(
@@ -169,7 +182,11 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
                                     +value
                                 }
                                 textInput(name = key) {
-                                    this.value = it[key] ?: ""
+                                    this.value = if (forANewLanguage) {
+                                        ""
+                                    } else {
+                                        it[key] ?: ""
+                                    }
                                 }
                                 br()
                                 br()
