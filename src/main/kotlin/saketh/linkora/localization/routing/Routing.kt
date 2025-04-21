@@ -50,12 +50,24 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
         margin-bottom: 1.5rem;
     }
     label {
+        font-weight: 150;
         display: block;
-        font-size: 0.9rem;
-        color: #D0BCFF;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
+        margin: 0;
+        padding: 0;
+        font-size: 1.12rem;
+        color: #CAC4D0;
     }
+  
+    h5 {
+     display: block;
+     font-size: 2rem;
+     color: #D0BCFF;
+     margin: 0;
+     padding: 0;
+     font-weight: 350;
+     margin-bottom: 0.75rem;
+    }
+    
     input {
         width: 100%;
         padding: 0.75rem;
@@ -83,21 +95,64 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
     input[type="submit"]:hover {
         background-color: #635387;
     }
+    #copy-btn {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #4F378B;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        border-radius: 8px;
+        z-index: 1000;
+    }
+    #copy-btn:hover {
+        background-color: #635387;
+    }
     """
                         }
                     }
                     body {
-                        latestKeysWithDefaultValuesFromTheApp.keys.forEach { key ->
+                        script {
+                            unsafe {
+                                raw(
+                                    """
+       document.addEventListener("DOMContentLoaded", () => {
+    async function copyNewJSONToClipboard(text) {
+      await navigator.clipboard.writeText(text);
+    }
+    document.getElementById("copy-btn")
+            .addEventListener("click", () => copyNewJSONToClipboard('generatedJson'));
+  });
+      """.trimIndent()
+                                )
+                            }
+                        }
+                        latestKeysWithDefaultValuesFromTheApp.forEach { (key, value) ->
                             div(classes = "form-field") {
-                                label { +key }
+                                label {
+                                    +key
+                                }
+                                h5 {
+                                    +value
+                                }
                                 textInput(name = key) {
                                     this.value = it[key] ?: ""
                                 }
+                                br()
+                                br()
                             }
                         }
+                        button {
+                            id = "copy-btn"
+                            +"Copy JSON"
+                        }
+                        br()
+                        br()
                     }
                 }
-
             }.onFailure {
                 call.respond(message = it.message as Any)
             }
@@ -111,4 +166,8 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
             }
         }
     }
+}
+
+fun text(string: String) {
+    println(string)
 }
