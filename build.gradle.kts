@@ -31,7 +31,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-client-core:$kotlin_version")
     implementation("io.ktor:ktor-client-cio-jvm:2.3.12")
-    implementation("io.ktor:ktor-server-html-builder:$kotlin_version")
+    implementation("io.github.sakethpathike:kapsule:0.0.2")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.12")
