@@ -10,5 +10,9 @@ enum class Language(val availableLanguageDTO: AvailableLanguageDTO) {
     ),
     MandarinChinese(
         AvailableLanguageDTO(localizedName = "中文 (Zhōngwén)", languageCode = "zh")
-    )
+    ),
+    Italian(
+        AvailableLanguageDTO(localizedName = "Italiano", languageCode = "ita")
+    ),
+
 }
