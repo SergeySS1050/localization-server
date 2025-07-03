@@ -28,7 +28,7 @@ repositories {
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("ch.qos.logback:logback-classic:${logback_version}")
     implementation("io.ktor:ktor-client-core:$kotlin_version")
     implementation("io.ktor:ktor-client-cio-jvm:2.3.12")
     implementation("io.github.sakethpathike:kapsule:0.0.2")
@@ -36,4 +36,23 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.12")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.12")
+}
+
+val availableLanguagesTask = tasks.register("availableLanguages") {
+    doLast {
+        val destinationFile = file("src/main/resources/raw/availableLanguages.txt")
+        if (!destinationFile.exists()) {
+            destinationFile.createNewFile()
+        }
+        destinationFile.writeText(text = "")
+        file(path = "src/main/resources/raw").listFiles().filter {
+            it.extension == "json"
+        }.forEach {
+            destinationFile.appendText(text = "${it.name}, ")
+        }
+    }
+}
+
+tasks.named<ProcessResources>("processResources"){
+    dependsOn(availableLanguagesTask)
 }

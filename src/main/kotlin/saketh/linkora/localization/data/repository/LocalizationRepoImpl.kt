@@ -5,7 +5,8 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.json.Json
-import saketh.linkora.localization.domain.Language
+import saketh.linkora.localization.availableLanguages
+import saketh.linkora.localization.domain.model.info.AvailableLanguageDTO
 import saketh.linkora.localization.domain.model.info.LocalizedInfoDTO
 import saketh.linkora.localization.domain.repository.LocalizationRepo
 
@@ -13,27 +14,33 @@ class LocalizationRepoImpl : LocalizationRepo {
     val json = Json { isLenient = true }
 
     private fun retrieveRawFileString(languageCode: String): String {
-        val file = this::class.java.getResourceAsStream("/raw/$languageCode.json")
-        return file.use { it?.bufferedReader()?.readText().toString() }
+        return this::class.java.getResource("/raw/$languageCode.json").readText()
     }
 
-    override fun getTranslationsFor(language: Language): String {
-        return retrieveRawFileString(languageCode = language.availableLanguageDTO.languageCode)
+    override fun getTranslationsFor(languageCode: String): String {
+        return retrieveRawFileString(languageCode = languageCode).substringAfter("---").trim()
     }
 
-    override fun getLocalizedInfo(): LocalizedInfoDTO {
+    override suspend fun getLocalizedInfo(): LocalizedInfoDTO {
         return LocalizedInfoDTO(
-            totalAvailableLanguages = Language.entries.size,
-            availableLanguages = Language.entries.map {
-                val localizedStringsCount =
-                    Json.decodeFromString<Map<String, String>>(retrieveRawFileString(it.availableLanguageDTO.languageCode)).size
-                it.availableLanguageDTO.copy(localizedStringsCount = localizedStringsCount)
-            },
-            totalStrings = 315,
-            lastUpdatedOn = "09-02-2025::11:06 PM IST"
+            availableLanguages = availableLanguages.map {
+                val currentLanguageCode = it.substringBefore(".").trim()
+                val localizedStringsCount = Json.decodeFromString<Map<String, String>>(
+                    string = getTranslationsFor(currentLanguageCode)
+                ).filter {
+                    it.value.isNotBlank()
+                }.size
+                AvailableLanguageDTO(
+                    localizedName = retrieveRawFileString(languageCode = currentLanguageCode).substringBefore("---")
+                        .trim().substringAfter("localizedName").substringAfter(":").substringBefore("\n").trim(),
+                    languageCode = currentLanguageCode,
+                    localizedStringsCount = localizedStringsCount
+                )
+            }, totalDefaultValues = getLatestKeysWithDefaultValues().size, lastUpdatedOn = "09-02-2025::11:06 PM IST"
         )
     }
 
+    // this is terrible
     override suspend fun getLatestKeysWithDefaultValues(): Map<String, String> {
         return HttpClient(CIO).use { httpClient ->
             httpClient.get("https://raw.githubusercontent.com/LinkoraApp/Linkora/master/composeApp/src/commonMain/kotlin/com/sakethh/linkora/common/Localization.kt")

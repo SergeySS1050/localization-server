@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LocalizedInfoDTO(
-    val totalAvailableLanguages: Int,
     val availableLanguages: List<AvailableLanguageDTO>,
-    val totalStrings: Int,
-    val lastUpdatedOn: String
+    val totalDefaultValues: Int,
+    val lastUpdatedOn: String,
+    val totalAvailableLanguages: Int = availableLanguages.size
 )

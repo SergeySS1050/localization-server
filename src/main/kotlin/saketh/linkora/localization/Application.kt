@@ -10,9 +10,13 @@ import saketh.linkora.localization.domain.repository.LocalizationRepo
 import saketh.linkora.localization.routing.configureRouting
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module).start(wait = true)
 }
+
+val availableLanguages : List<String> =
+    object {}.javaClass.getResource("/raw/availableLanguages.txt").readText().split(",").filter {
+        it.isNotBlank()
+    }
 
 fun Application.module() {
     install(ContentNegotiation) {

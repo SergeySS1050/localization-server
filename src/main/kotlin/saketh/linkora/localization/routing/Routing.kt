@@ -9,7 +9,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.unsafe
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import saketh.linkora.localization.domain.Language
+import saketh.linkora.localization.availableLanguages
 import saketh.linkora.localization.domain.repository.LocalizationRepo
 import sakethh.kapsule.*
 import sakethh.kapsule.utils.*
@@ -166,7 +166,7 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
                             Text(text = "Copy JSON", fontFamily = "Poppins", color = "white", fontWeight = 12.px)
                         }
                     }
-                }.toString())
+                })
             }.onFailure {
                 call.respond(message = it.message as Any)
             }
@@ -174,9 +174,11 @@ fun Application.configureRouting(localizationRepo: LocalizationRepo) {
         get("/keys") {
             call.respond(localizationRepo.getLatestKeysWithDefaultValues())
         }
-        Language.entries.forEach { language ->
-            get(language.availableLanguageDTO.languageCode) {
-                call.respondText(localizationRepo.getTranslationsFor(language))
+        availableLanguages.map {
+            it.substringBefore(".").trim()
+        }.forEach { languageCode ->
+            get(languageCode) {
+                call.respondText(localizationRepo.getTranslationsFor(languageCode))
             }
         }
     }
